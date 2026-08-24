@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Movie</title>
+</head>
+<body>
+    
+
+    <br>
+
+        <form action="/add" method="POST">
+
+        <label for="title">Title:</label><br>
+        <input type="text" id="title" name="title">
+        
+        <br>
+
+        <label for="genre">Genre:</label><br>
+        <input type="text" id="genre" name="genre">
+
+        <br>
+
+
+        <label for="director">Director:</label><br>
+        <input type="text" id="director" name="director">
+        
+        <br>
+
+
+        <label for="rating">Rating:</label><br>
+        <input type="text" id="rating" name="rating">
+
+        <br>
+
+
+        <label for="date">Release Date:</label><br>
+        <input type="text" id="date" name="date">
+
+        <br><br>
+
+        <input type="submit" value="Add Movie">
+
+        <a href="{{ url_for('addMovie') }}">Add Another?</a>
+        <a href="{{ url_for('home') }}">Return to home</a>
+
+    </form>
+</body>
+</html>
