@@ -482,15 +482,28 @@ def login():
 
             if user:
                 session["email"] = request.form["email"]
-                return redirect("addMovie")
+                return redirect(url_for("home"))
             else:
-                return redirect("login")
+                return redirect(url_for("login"))
 
 
 
 
     return render_template('login.html')
 
+
+################################################################
+################################################################
+################################################################
+##################### LOGOUT ###################################
+################################################################
+################################################################
+
+@app.route('/logout')
+
+def logout():
+    session.pop('email', None)
+    return redirect(url_for('login'))
 
 
 
