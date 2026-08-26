@@ -61,13 +61,16 @@ def query_db(query, args=(), one=False):
 ################################################################
 ################################################################
 ################################################################
-
 @app.route("/")
+
+@app.route("/home")
 def home():
     if "email" in session:
         
         return render_template('index.html')
-    return render_template('login.html')
+    
+    return render_template('visitor.html')
+
 
 
 def sessionCheck():

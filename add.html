@@ -7,7 +7,25 @@
 </head>
 <body>
     
+    <header>
+        Movie Tracker
+    </header>
+    <nav>
+        
+        <a href="/home">Home</a>
+        <a href="/add">Add Movie</a>
+        <a href="/view">View Movie</a>
+        <a href="/logout">Logout</a>
 
+
+
+    <form action="/search" method="GET">
+        <input type="text" placeholder="Search here:" name="searchMovie" value="{{ query }}">
+        <button type="submit">Search</button>
+    </form>
+
+    </nav>
+    
     <br>
 
         <form action="/add" method="POST">
@@ -42,8 +60,7 @@
 
         <input type="submit" value="Add Movie">
 
-        <a href="{{ url_for('addMovie') }}">Add Another?</a>
-        <a href="{{ url_for('home') }}">Return to home</a>
+
 
     </form>
 </body>
