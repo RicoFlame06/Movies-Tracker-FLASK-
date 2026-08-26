@@ -69,6 +69,12 @@ def home():
         return render_template('index.html')
     return render_template('login.html')
 
+
+def sessionCheck():
+    if "email" not in session:
+        return render_template('redirect.html')
+
+
 ################################################################
 ################################################################
 ################################################################
@@ -99,25 +105,30 @@ def addMovie():
     # Connecting to the database
     connection = sqlite3.connect("movies.db")
     cursor = connection.cursor()
+    
+    if "email" not in session:
+        return render_template('redirect.html')
 
-    if request.method == "POST":
-        # Grabbing form fields matching your HTML 'name' attributes
-        title = request.form["title"]
-        genre = request.form["genre"]
-        director = request.form["director"]
-        rating = request.form["rating"]
-        date = request.form["date"]
+    else:    
 
-        # Running the exact insert query matching your database table layout
-        cursor.execute(
-            "INSERT INTO movies (title, genre, director, rating, date) VALUES (?, ?, ?, ?, ?)",
-            (title, genre, director, rating, date)
-        )
+        if request.method == "POST":
+            # Grabbing form fields matching your HTML 'name' attributes
+            title = request.form["title"]
+            genre = request.form["genre"]
+            director = request.form["director"]
+            rating = request.form["rating"]
+            date = request.form["date"]
 
-        connection.commit()
-        connection.close()  
+            # Running the exact insert query matching your database table layout
+            cursor.execute(
+                "INSERT INTO movies (title, genre, director, rating, date) VALUES (?, ?, ?, ?, ?)",
+                (title, genre, director, rating, date)
+            )
 
-        return redirect("addConfirm")
+            connection.commit()
+            connection.close()  
+
+            return redirect("addConfirm")
 
 
     return render_template('add.html')
@@ -141,12 +152,16 @@ def viewMovie():
     connection = sqlite3.connect('movies.db')
     cursor = connection.cursor()
 
-    cursor.execute("SELECT * FROM movies")
-    movies_data = cursor.fetchall()
+    if "email" not in session:
+        return render_template('redirect.html')
 
-    connection.close()
+    else:
+        cursor.execute("SELECT * FROM movies")
+        movies_data = cursor.fetchall()
 
-    return render_template("view.html", movies=movies_data)
+        connection.close()
+
+        return render_template("view.html", movies=movies_data)
 
 
 ################################################################
@@ -482,15 +497,28 @@ def login():
 
             if user:
                 session["email"] = request.form["email"]
-                return redirect("addMovie")
+                return redirect(url_for("home"))
             else:
-                return redirect("login")
+                return redirect(url_for("login"))
 
 
 
 
     return render_template('login.html')
 
+
+################################################################
+################################################################
+################################################################
+##################### LOGOUT ###################################
+################################################################
+################################################################
+
+@app.route('/logout')
+
+def logout():
+    session.pop('email', None)
+    return redirect(url_for('login'))
 
 
 
