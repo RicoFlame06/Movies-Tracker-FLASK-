@@ -6,34 +6,34 @@ cursor = connection.cursor()
 
 
 
+
+
+
 command1 = """
 CREATE TABLE IF NOT EXISTS movies (
-    id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    movie_id INTEGER PRIMARY KEY AUTOINCREMENT, 
     title TEXT, 
     genre TEXT, 
     director TEXT,
     rating INTEGER,
-    date TEXT
+    date TEXT,
+    user_id INTEGER,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
 )
 """
 
 command2 = """
 CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    user_id INTEGER PRIMARY KEY AUTOINCREMENT, 
     email TEXT, 
     password TEXT
 
 )
 """
 
-
-
-
-
-
-
 cursor.execute(command1)
 cursor.execute(command2)
+
 
 connection.commit()
 connection.close()
