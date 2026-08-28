@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, g, session
+from flask import Flask, render_template, request, redirect, url_for, g, session, make_response
 import sqlite3
 
 app = Flask(__name__)
@@ -6,9 +6,24 @@ app = Flask(__name__)
 DATABASE = 'movies.db'
 
 app.secret_key = 'super_secret_random_key_here'
+
+
 ################################################################
 ################################################################
+###################### SET COOKIES #############################
 ################################################################
+################################################################
+
+
+# getting cookie from the previous set_cookie code
+@app.route('/getcookie')
+def getcookie():
+    GFG = request.cookies.get('GFG')
+    return 'GFG is a '+ GFG
+
+################################################################
+################################################################
+###################### Update Movie ############################
 ################################################################
 ################################################################
 
@@ -24,7 +39,7 @@ def updateMovie(id, title, genre, director, rating, date):
 ################################################################
 ################################################################
 ################################################################
-################################################################
+######################### GET DATABASE #########################
 ################################################################
 ################################################################
 ################################################################
@@ -40,7 +55,7 @@ def get_db():
 ################################################################
 ################################################################
 ################################################################
-################################################################
+############################ QUERY DB ##########################
 ################################################################
 ################################################################
 ################################################################
@@ -61,13 +76,22 @@ def query_db(query, args=(), one=False):
 ################################################################
 ################################################################
 ################################################################
-
 @app.route("/")
+
+@app.route("/home")
 def home():
-    if "email" in session:
+    if "user_id" in session:
         
         return render_template('index.html')
-    return render_template('login.html')
+    
+    return render_template('visitor.html')
+
+
+
+def sessionCheck():
+    if "user_id" not in session:
+        return render_template('redirect.html')
+
 
 ################################################################
 ################################################################
@@ -99,25 +123,34 @@ def addMovie():
     # Connecting to the database
     connection = sqlite3.connect("movies.db")
     cursor = connection.cursor()
+    
+    if "user_id" not in session:
+        return render_template('redirect.html')
 
-    if request.method == "POST":
-        # Grabbing form fields matching your HTML 'name' attributes
-        title = request.form["title"]
-        genre = request.form["genre"]
-        director = request.form["director"]
-        rating = request.form["rating"]
-        date = request.form["date"]
+    else:    
 
-        # Running the exact insert query matching your database table layout
-        cursor.execute(
-            "INSERT INTO movies (title, genre, director, rating, date) VALUES (?, ?, ?, ?, ?)",
-            (title, genre, director, rating, date)
-        )
+        user_id = session["user_id"]
 
-        connection.commit()
-        connection.close()  
 
-        return redirect("addConfirm")
+        if request.method == "POST":
+
+            # Grabbing form fields matching your HTML 'name' attributes
+            title = request.form["title"]
+            genre = request.form["genre"]
+            director = request.form["director"]
+            rating = request.form["rating"]
+            date = request.form["date"]
+
+            # Running the exact insert query matching your database table layout
+            cursor.execute(
+                "INSERT INTO movies (title, genre, director, rating, date, user_id) VALUES (?, ?, ?, ?, ?, ?)",
+                (title, genre, director, rating, date, user_id)
+            )
+
+            connection.commit()
+            connection.close()  
+
+            return redirect("addConfirm")
 
 
     return render_template('add.html')
@@ -141,12 +174,16 @@ def viewMovie():
     connection = sqlite3.connect('movies.db')
     cursor = connection.cursor()
 
-    cursor.execute("SELECT * FROM movies")
-    movies_data = cursor.fetchall()
+    if "user_id" not in session:
+        return render_template('redirect.html')
 
-    connection.close()
+    else:
+        cursor.execute("SELECT * FROM movies")
+        movies_data = cursor.fetchall()
 
-    return render_template("view.html", movies=movies_data)
+        connection.close()
+
+        return render_template("view.html", movies=movies_data)
 
 
 ################################################################
@@ -341,6 +378,36 @@ def sortDates():
 
     return render_template('view.html', movies=movies)
 
+################################################################
+################################################################
+################################################################
+################################################################
+################################################################
+#####################  Email Validation #######################
+################################################################
+################################################################
+################################################################
+################################################################
+
+
+def emailValidation(email):
+
+    # Connecting to the database
+    connection = sqlite3.connect("movies.db")
+    cursor = connection.cursor()
+
+    if request.form["email"]:
+
+        email = request.form["email"].strip()
+
+        cursor.execute("SELECT email FROM users WHERE email = ?", (email,)) # compares the email user types to the existing ones in the table
+        rows = cursor.fetchone() # Checks one specific email
+
+        if rows:
+            return "Email Already Exists"
+        else:
+            return None
+
 
 
 ################################################################
@@ -362,13 +429,8 @@ def passwordValidation(password, cpassword):
         password = request.form["password"].strip()
         cpassword = request.form["cpassword"].strip()
 
-
-
         if password != cpassword:
             return "Passwords don't match"
-
-        elif password == "":
-            return "Password is empty" ###################### NOT WORKING
 
         elif len(password) < 6:
             return "Password must be 6 characters"
@@ -385,7 +447,6 @@ def passwordValidation(password, cpassword):
         elif not any(char in "!@#$%^&*()-_=+[{]};:'\",<.>/?`~" for char in password):
             return "Password must contain a symbol"
 
-###################### NO ERROR MESSAGES
         else:
             return None
 
@@ -419,9 +480,12 @@ def register():
             cpassword = request.form["cpassword"]
 
             validationError = passwordValidation(password, cpassword)
-
+            emailCheck = emailValidation(email)
             if validationError:
                 return render_template('register.html', error=validationError)
+
+            elif emailCheck:
+                return render_template('register.html', error=emailCheck)
 
             else: 
             # Running the exact insert query matching your database table layout
@@ -458,6 +522,10 @@ def register():
 ################################################################
 ################################################################
 
+def loginValidation():
+    return "Invalid Credentials"
+
+
 
 @app.route('/login', methods=['POST', "GET"])
 
@@ -481,28 +549,34 @@ def login():
             connection.close()  
 
             if user:
-                session["email"] = request.form["email"]
-                return redirect("addMovie")
+                output = "Welcome"
+                resp = make_response(output)
+                resp.set_cookie('user_id')
+                session["user_id"] = request.form["email"]
+
+                return redirect(url_for("home"))
             else:
-                return redirect("login")
 
-
+                #### validation / error message
+                loginValid = loginValidation()
+                return render_template('login.html', error=loginValid)
 
 
     return render_template('login.html')
 
 
+################################################################
+################################################################
+################################################################
+##################### LOGOUT ###################################
+################################################################
+################################################################
 
+@app.route('/logout')
 
-
-
-
-
-
-
-
-
-
+def logout():
+    session.pop('user_id', None)
+    return redirect(url_for('login'))
 
 
 
