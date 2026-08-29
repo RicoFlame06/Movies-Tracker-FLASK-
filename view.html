@@ -7,7 +7,13 @@
 </head>
 <body>
 
-    <header>Movies</header>
+    <header>View Movies</header>
+
+    <header>
+        Movie Tracker
+        {% extends "nav.html" %}
+
+    </header>
 
 
     <form action="{{ url_for ('chooseGenre') }}" method="POST">
@@ -20,6 +26,8 @@
             <option value="Adventure">Adventure</option>
             <option value="Romance">Romance</option>
             <option value="Comedy">Comedy</option>
+            <option value="Horror">Horror</option>
+
 
         </select>
 
@@ -73,6 +81,7 @@
                 <th>Director</th>
                 <th>Rating</th>
                 <th>Date</th>
+                <th>Posted by</th>
             </tr> 
 
         </thead>
@@ -89,6 +98,8 @@
                     <td>{{ movie[4] }}</td>
                     <td>{{ movie[5] }}</td>
                     <td>{{ movie[6] }}</td>
+                    <td>{{ movie[7] }}</td>
+
 
                     <td>
                         <a href="{{ url_for('editMovie', id = movie[0]) }}">Edit</a>  

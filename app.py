@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, g, session, make_response
 import sqlite3
+import hashlib
 
 app = Flask(__name__)
 
@@ -481,6 +482,7 @@ def register():
 
             validationError = passwordValidation(password, cpassword)
             emailCheck = emailValidation(email)
+
             if validationError:
                 return render_template('register.html', error=validationError)
 
@@ -488,6 +490,17 @@ def register():
                 return render_template('register.html', error=emailCheck)
 
             else: 
+
+                # generates alt key
+                s = '5gz'
+
+                password_salt = password + s
+
+                # Hashes password
+                h = hashlib.sha256(password_salt.encode())
+
+                print(h.hexdigest())
+                
             # Running the exact insert query matching your database table layout
                 cursor.execute(
                     "INSERT INTO users (email, password) VALUES (?, ?)",

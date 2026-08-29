@@ -7,8 +7,13 @@
 </head>
 <body>
     
+    <header>
+        Movie Tracker
+        {% extends "nav.html" %}
+    </header>
+    
 
-    <br>
+     {% block content %}
 
         <form action="/add" method="POST">
 
@@ -42,9 +47,10 @@
 
         <input type="submit" value="Add Movie">
 
-        <a href="{{ url_for('addMovie') }}">Add Another?</a>
-        <a href="{{ url_for('home') }}">Return to home</a>
+
 
     </form>
+
+    {% endblock %}
 </body>
 </html>
