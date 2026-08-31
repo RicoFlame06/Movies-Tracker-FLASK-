@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, g, session, make_response
 import sqlite3
+import hashlib
 
 app = Flask(__name__)
 
@@ -218,7 +219,7 @@ def editMovie(id):
     # Connecting to the database
     connection = sqlite3.connect("movies.db")
     cursor = connection.cursor()
-    cursor.execute("SELECT * FROM movies WHERE id = ?",(id,))
+    cursor.execute("SELECT * FROM movies WHERE movie_id = ?",(id,))
     movies_data = cursor.fetchone()
     print(movies_data)
 
@@ -248,7 +249,7 @@ def deleteMovie(id):
 
             connection = sqlite3.connect("movies.db")
             cursor = connection.cursor()
-            cursor.execute("DELETE FROM movies WHERE id = ?", (id,))
+            cursor.execute("DELETE FROM movies WHERE movie_id = ?", (id,))
             connection.commit()
             connection.close()
 
@@ -481,6 +482,7 @@ def register():
 
             validationError = passwordValidation(password, cpassword)
             emailCheck = emailValidation(email)
+
             if validationError:
                 return render_template('register.html', error=validationError)
 
@@ -488,6 +490,17 @@ def register():
                 return render_template('register.html', error=emailCheck)
 
             else: 
+
+                # generates alt key
+                s = '5gz'
+
+                password_salt = password + s
+
+                # Hashes password
+                h = hashlib.sha256(password_salt.encode())
+
+                print(h.hexdigest())
+                
             # Running the exact insert query matching your database table layout
                 cursor.execute(
                     "INSERT INTO users (email, password) VALUES (?, ?)",
@@ -579,6 +592,36 @@ def logout():
     return redirect(url_for('login'))
 
 
+################################################################
+################################################################
+################################################################
+##################### YOUR MOVIES ##############################
+################################################################
+################################################################
+
+
+@app.route('/userMovies')
+
+def userMovies():
+
+    connection = sqlite3.connect('movies.db')
+    cursor = connection.cursor()
+
+    if "user_id" not in session:
+        return render_template('redirect.html')
+
+
+    logged_user = session["user_id"]
+
+    cursor.execute("SELECT * FROM movies WHERE user_id = ?", (logged_user,))
+    movies_data = cursor.fetchall()
+
+    connection.close()
+
+    return render_template("userMovies.html", movies=movies_data)
+
+
+
 
 
 ################################################################
@@ -587,6 +630,8 @@ def logout():
 ##################### DEBUGGING ################################
 ################################################################
 ################################################################
+
+
 
 if __name__ == '__main__':  
     # Debug mode is now fully activated to catch any sneaky issues
