@@ -6,6 +6,14 @@
     <title>Sign Up</title>
 </head>
 <body>
+
+    <header>
+        Movie Tracker
+        {% extends "visitorNav.html" %}
+    </header>
+
+    {% block content %}
+    
     <h2>Register</h2>
 
     <form action="/register" method="POST">
@@ -36,5 +44,8 @@
 
 
     </form>
+
+    {% endblock %}
+
 </body>
 </html>

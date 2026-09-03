@@ -6,8 +6,23 @@
     <title>Confirmation</title>
 </head>
 <body>
+
+    <header>
+        Movie Tracker
+        {% extends "nav.html" %}
+    </header>
+
+    {% block content %}
+
+    
     <h1>Confirmation</h1>
     <br>
     <h1>Movie Added!</h1>
+
+    <a href="{{ url_for('addMovie') }}">Add Another?</a>
+    <a href="{{ url_for('home') }}">Return to home</a>
+
+    {% endblock %}
+
 </body>
 </html>
