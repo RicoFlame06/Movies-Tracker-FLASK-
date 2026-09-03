@@ -7,44 +7,76 @@
 </head>
 <body>
     
+    <header>
+        Movie Tracker
+        {% extends "nav.html" %}
+    </header>
+    
 
-    <br>
+     {% block content %}
 
         <form action="/add" method="POST">
 
         <label for="title">Title:</label><br>
-        <input type="text" id="title" name="title">
+        <input type="text" id="title" name="title" required>
         
         <br>
 
-        <label for="genre">Genre:</label><br>
-        <input type="text" id="genre" name="genre">
+        <label for="genre">Genre:</label>
+
+        <select name="genre" id="genre">
+
+            <option value="Action">Action</option>
+            <option value="Adventure">Adventure</option>
+            <option value="Romance">Romance</option>
+            <option value="Comedy">Comedy</option>
+            <option value="Horror">Horror</option>
+
+
+        </select>
+
 
         <br>
 
 
         <label for="director">Director:</label><br>
-        <input type="text" id="director" name="director">
+        <input type="text" id="director" name="director" required>
         
         <br>
 
 
-        <label for="rating">Rating:</label><br>
-        <input type="text" id="rating" name="rating">
+        <label for="rating">Genre:</label>
+
+        <select name="rating" id="rating">
+
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+
+
+        </select>
 
         <br>
 
 
-        <label for="date">Release Date:</label><br>
-        <input type="text" id="date" name="date">
+        <label for="releaseDate">Release Date:</label><br>
+        <input type="date" id="date" name="releaseDate" required>
 
         <br><br>
 
         <input type="submit" value="Add Movie">
 
-        <a href="{{ url_for('addMovie') }}">Add Another?</a>
-        <a href="{{ url_for('home') }}">Return to home</a>
+
+        {% if error %}
+            <div style="color: red; font-weight: bold; margin-bottom: 10px;">
+                ⚠️ {{ error }}
+            </div>
+        {% endif %}
 
     </form>
+
+    {% endblock %}
 </body>
 </html>
