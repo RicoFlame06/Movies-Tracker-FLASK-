@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, g, session, make_response
 import sqlite3
+import hashlib
 
 app = Flask(__name__)
 
@@ -111,6 +112,47 @@ def addConfirmation():
 ################################################################
 ################################################################
 ################################################################
+######################## ADD MOVIE Validation ##################
+################################################################
+################################################################
+################################################################
+################################################################
+
+def addDirectorValidation():
+
+    if request.form["director"]:
+
+        director = request.form["director"].strip()
+
+        if any(char.isdigit() for char in director ):
+            return "Invalid data in input"
+
+        if any(char in "!@#$%^&*()-_=+[{]};:'\",<.>/?`~" for char in director):
+            return "Invalid data in input"
+
+        else:
+            return None
+
+
+
+def addDateValidation():
+
+    from datetime import datetime
+
+    if request.form["releaseDate"]:
+
+        user_date = request.form["releaseDate"].strip()
+
+        input_date = datetime.strptime(user_date, "%Y-%m-%d").date()
+        
+        if input_date > datetime.now().date():
+            return "Invalid Date"
+        else:
+            return None
+
+################################################################
+################################################################
+################################################################
 ######################## ADD MOVIE #############################
 ################################################################
 ################################################################
@@ -139,7 +181,19 @@ def addMovie():
             genre = request.form["genre"]
             director = request.form["director"]
             rating = request.form["rating"]
-            date = request.form["date"]
+            date = request.form["releaseDate"]
+
+            validationDirectorError = addDirectorValidation()
+
+            validationDateError = addDateValidation()
+
+            if validationDirectorError:
+                return render_template('add.html', error=validationDirectorError)
+
+
+            elif validationDateError:
+                return render_template('add.html', error=validationDateError)
+
 
             # Running the exact insert query matching your database table layout
             cursor.execute(
@@ -218,7 +272,7 @@ def editMovie(id):
     # Connecting to the database
     connection = sqlite3.connect("movies.db")
     cursor = connection.cursor()
-    cursor.execute("SELECT * FROM movies WHERE id = ?",(id,))
+    cursor.execute("SELECT * FROM movies WHERE movie_id = ?",(id,))
     movies_data = cursor.fetchone()
     print(movies_data)
 
@@ -248,13 +302,13 @@ def deleteMovie(id):
 
             connection = sqlite3.connect("movies.db")
             cursor = connection.cursor()
-            cursor.execute("DELETE FROM movies WHERE id = ?", (id,))
+            cursor.execute("DELETE FROM movies WHERE movie_id = ?", (id,))
             connection.commit()
             connection.close()
 
-            return redirect(url_for("viewMovie"))
+            return redirect(url_for("userMovies"))
     
-    return render_template("view.html")
+    return render_template("userMovies.html")
 
 ################################################################
 ################################################################
@@ -272,6 +326,8 @@ def deleteMovie(id):
 def searchMovie():
 
     searchValue = request.args.get('searchMovie', '').strip()
+
+
 
     if searchValue:
 
@@ -481,6 +537,7 @@ def register():
 
             validationError = passwordValidation(password, cpassword)
             emailCheck = emailValidation(email)
+
             if validationError:
                 return render_template('register.html', error=validationError)
 
@@ -488,6 +545,17 @@ def register():
                 return render_template('register.html', error=emailCheck)
 
             else: 
+
+                # generates alt key
+                s = '5gz'
+
+                password_salt = password + s
+
+                # Hashes password
+                h = hashlib.sha256(password_salt.encode())
+
+                print(h.hexdigest())
+                
             # Running the exact insert query matching your database table layout
                 cursor.execute(
                     "INSERT INTO users (email, password) VALUES (?, ?)",
@@ -579,7 +647,142 @@ def logout():
     return redirect(url_for('login'))
 
 
+################################################################
+################################################################
+################################################################
+##################### YOUR MOVIES ##############################
+################################################################
+################################################################
 
+
+@app.route('/userMovies')
+
+def userMovies():
+
+    connection = sqlite3.connect('movies.db')
+    cursor = connection.cursor()
+
+    if "user_id" not in session:
+        return render_template('redirect.html')
+
+
+    logged_user = session["user_id"]
+
+    cursor.execute("SELECT * FROM movies WHERE user_id = ?", (logged_user,))
+    movies_data = cursor.fetchall()
+
+    connection.close()
+
+    return render_template("userMovies.html", movies=movies_data)
+
+
+
+################################################################
+################################################################
+################################################################
+##################### USER CHOOSE GENRE ########################
+################################################################
+################################################################
+################################################################
+################################################################
+################################################################
+################################################################
+
+
+@app.route('/userChooseGenre', methods=['POST'])
+
+def userChooseGenre():
+
+
+    if "user_id" not in session:
+        return render_template('redirect.html')
+
+    logged_user = session["user_id"]
+
+    genre = request.form.get("genre")
+
+    sql = "SELECT * FROM movies WHERE user_id = ? AND genre = ?"  
+    movies = query_db(sql, (logged_user, genre))
+
+    print(movies)
+
+    return render_template('userMovies.html', movies=movies)
+
+
+################################################################
+################################################################
+################################################################
+##################### USER SORT RATINGS ########################
+################################################################
+################################################################
+################################################################
+################################################################
+################################################################
+
+
+@app.route('/userSortRatings', methods=['POST'])
+
+
+
+def userSortRatings():
+
+    if "user_id" not in session:
+        return render_template('redirect.html')
+
+    logged_user = session["user_id"]
+
+    rating = request.form.get("rating")
+
+    if rating == "high":
+
+        sql = "SELECT * FROM movies WHERE user_id = ? ORDER BY rating DESC"
+
+    elif rating == "low":
+        
+        sql = "SELECT * FROM movies WHERE user_id = ? ORDER BY rating ASC" 
+
+
+    movies = query_db(sql, (logged_user,))
+
+
+    return render_template('userMovies.html', movies=movies)
+
+
+################################################################
+################################################################
+################################################################
+##################### USER SORT DATES ##########################
+################################################################
+################################################################
+################################################################
+################################################################
+
+ 
+
+@app.route('/userSortDates', methods=['POST'])
+
+def userSortDates():
+
+    if "user_id" not in session:
+        return render_template('redirect.html')
+
+    logged_user = session["user_id"]
+
+    date = request.form.get("date")
+
+    if date == "newest":
+
+        sql = "SELECT * FROM movies WHERE user_id = ? ORDER BY date DESC" 
+
+    elif date == "oldest":
+        
+        sql = "SELECT * FROM movies WHERE user_id = ? ORDER BY date ASC" 
+
+
+    movies = query_db(sql, (logged_user,))
+
+
+    return render_template('userMovies.html', movies=movies)
 
 ################################################################
 ################################################################
@@ -588,6 +791,10 @@ def logout():
 ################################################################
 ################################################################
 
+
+
 if __name__ == '__main__':  
     # Debug mode is now fully activated to catch any sneaky issues
      app.run(debug=True)
+
+
