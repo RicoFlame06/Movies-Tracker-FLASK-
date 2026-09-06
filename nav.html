@@ -1,19 +1,27 @@
-    <nav>
-        
-        <a href="/home">Home</a>
-        <a href="/add">Add Movie</a>
-        <a href="/view">View Movie</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
 
-        <label for="profile">profile:</label>
+<nav>
+    
+    <a href="/home">Home</a>
+    <a href="/add">Add Movie</a>
+    <a href="/view">View Movie</a>
 
-        <select onchange="if (this.value) window.location.href = this.value;">>
+    <label for="profile">profile:</label>
 
-            <option value=""></option>
-            <option value="/userMovies">Your Movies</option>
-            <option value="/logout">/Logout</option>
+    <select onchange="if (this.value) window.location.href = this.value;">>
 
+        <option value=""></option>
+        <option value="/userMovies">Your Movies</option>
+        <option value="/logout">/Logout</option>
 
-        </select>
+    </select>
 
 
     <form action="/search" method="GET">
@@ -21,8 +29,12 @@
         <button type="submit">Search</button>
     </form>
 
-    </nav>
+</nav>
     
-    <br>
-
+<main>
 {% block content %}{% endblock %}
+</main>
+
+</body>
+</html>
+

@@ -1,0 +1,22 @@
+header{
+    background-color: rgb(19, 11, 90);
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+nav {
+    background-color: rgb(66, 66, 66);
+    text-align: center;
+    color: white;
+}
+
+main {
+    text-align: center;
+}
+
+footer {
+    background-color: rgb(12, 12, 12);
+    text-align: center;
+    color: white;
+}
