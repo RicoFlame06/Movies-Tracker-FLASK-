@@ -1,0 +1,101 @@
+
+/** Main contents  **/
+
+main{
+    height: 100vh;
+    margin: 0;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+}
+
+header{
+    background-color: rgb(19, 11, 90);
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+nav {
+    background-color: rgb(66, 66, 66);
+    text-align: center;
+    color: white;
+    padding: 5px;
+}
+
+
+
+
+
+
+/** Index Page **/
+
+main {
+    text-align: center;
+}
+
+footer {
+    background-color: rgb(12, 12, 12);
+    text-align: center;
+    color: white;
+    padding: 20px;
+
+}
+
+
+
+
+
+
+/** Add Page **/
+ 
+.form-container{
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;     /* Centers vertically */
+    min-height: 100vh;       /* Takes up 100% of the screen height */
+    background-color: white;
+}
+
+#add input {
+  border: 2px solid #000000;
+  padding: 10px;
+  border-radius: 25px;
+}
+
+#add select {
+  border: 2px solid #000000;
+  padding: 10px;
+  border-radius: 25px;
+}
+
+
+
+
+
+
+/** View Page **/
+
+.view-container{
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;     /* Centers vertically */
+    min-height: 100vh;       /* Takes up 100% of the screen height */
+    background-color: white;
+
+}
+
+
+.filter-container{
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;     /* Centers vertically */
+    background-color: white;
+    padding: 10px;
+}
+
+.movie-container{
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;     /* Centers vertically */
+    background-color: white;
+}
