@@ -7,20 +7,21 @@ cursor = connection.cursor()
 
 
 
-
-
 command1 = """
 CREATE TABLE IF NOT EXISTS movies (
     movie_id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    image TEXT, 
     title TEXT, 
     genre TEXT, 
     director TEXT,
     rating INTEGER,
     date TEXT,
+    synopsis TEXT,
     user_id INTEGER,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 )
 """
+
 
 command2 = """
 CREATE TABLE IF NOT EXISTS users (
@@ -31,7 +32,9 @@ CREATE TABLE IF NOT EXISTS users (
 )
 """
 
+
 cursor.execute(command1)
+
 cursor.execute(command2)
 
 

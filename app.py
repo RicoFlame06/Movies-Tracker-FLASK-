@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, g, session, make_response
 import sqlite3
 import hashlib
+from werkzeug.utils import secure_filename
+import os
 
 app = Flask(__name__)
 
@@ -178,10 +180,27 @@ def addMovie():
 
             # Grabbing form fields matching your HTML 'name' attributes
             title = request.form["title"]
+            image = request.files.get("image")
+            synopsis = request.form["synopsis"]
             genre = request.form["genre"]
             director = request.form["director"]
             rating = request.form["rating"]
             date = request.form["releaseDate"]
+
+            image_file = request.files.get("image") # Grabs image from the request.files
+
+            if image_file and image_file.filename != "":
+                filename = secure_filename(image_file.filename)
+                        
+                # 2. Save physical file to static/uploads
+                upload_dir = os.path.join(app.root_path, "static", "uploads")
+                os.makedirs(upload_dir, exist_ok=True)
+                image_file.save(os.path.join(upload_dir, filename))
+                        
+                # 3. Path string to save in SQLite (e.g., "uploads/poster.jpg")
+                db_image_path = f"uploads/{filename}"
+            else:
+                db_image_path = None
 
             validationDirectorError = addDirectorValidation()
 
@@ -197,8 +216,8 @@ def addMovie():
 
             # Running the exact insert query matching your database table layout
             cursor.execute(
-                "INSERT INTO movies (title, genre, director, rating, date, user_id) VALUES (?, ?, ?, ?, ?, ?)",
-                (title, genre, director, rating, date, user_id)
+                "INSERT INTO movies (title, image, genre, director, rating, date, synopsis, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                (title, db_image_path, genre, director, rating, date, synopsis, user_id)
             )
 
             connection.commit()
@@ -783,6 +802,36 @@ def userSortDates():
 
 
     return render_template('userMovies.html', movies=movies)
+
+
+
+
+################################################################
+################################################################
+################################################################
+##################### MOVIE DETAILS ############################
+################################################################
+################################################################
+
+
+@app.route('/movie/<int:movie_id>')
+def movieDetails(movie_id):
+
+    connection = sqlite3.connect('movies.db')
+    connection.row_factory = sqlite3.Row 
+
+    cursor = connection.cursor()
+    
+    cursor.execute("SELECT * FROM movies WHERE movie_id = ?", (movie_id,))
+    userMovie = cursor.fetchone()
+
+
+    connection.close()
+
+    if not userMovie:
+        return "Movie Not Found", 404
+
+    return render_template('movieDetails.html', movie=userMovie)
 
 ################################################################
 ################################################################

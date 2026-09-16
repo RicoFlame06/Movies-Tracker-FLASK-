@@ -79,7 +79,6 @@ footer {
     display: flex;
     justify-content: center; /* Centers horizontally */
     align-items: center;     /* Centers vertically */
-    min-height: 100vh;       /* Takes up 100% of the screen height */
     background-color: white;
 
 }
@@ -98,4 +97,98 @@ footer {
     justify-content: center; /* Centers horizontally */
     align-items: center;     /* Centers vertically */
     background-color: white;
+    min-height: 100vh;       /* Takes up 100% of the screen height */
+
+}
+
+
+
+
+/** Login Page **/
+
+.login-container{
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;     /* Centers vertically */
+    min-height: 100vh;       /* Takes up 100% of the screen height */
+    background-color: rgb(235, 235, 235);
+    padding: 10px;
+}
+
+#login input {
+    border: 2px solid #000000;
+    padding: 10px;
+    border-radius: 25px;
+    width: 100%;
+    padding: 10px;
+
+}
+
+
+#login button{
+  border: 2px solid #000000;
+  padding: 10px;
+  border-radius: 25px;
+  width: 100%;
+
+}
+
+
+/** Register Page **/
+
+.register-container{
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;     /* Centers vertically */
+    min-height: 100vh;       /* Takes up 100% of the screen height */
+    background-color: rgb(235, 235, 235);
+    padding: 10px;
+}
+
+#register input {
+    border: 2px solid #000000;
+    padding: 10px;
+    border-radius: 25px;
+    width: 100%;
+    padding: 10px;
+
+}
+
+
+#register button{
+  border: 2px solid #000000;
+  padding: 10px;
+  border-radius: 25px;
+  width: 100%;
+
+}
+
+
+/** User Movies **/
+
+
+.view{
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;     /* Centers vertically */
+    background-color: white;
+
+}
+
+
+.filter-container{
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;     /* Centers vertically */
+    background-color: white;
+    padding: 10px;
+}
+
+.movie-container{
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;     /* Centers vertically */
+    background-color: white;
+    min-height: 100vh;       /* Takes up 100% of the screen height */
+
 }
